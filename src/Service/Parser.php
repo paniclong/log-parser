@@ -32,11 +32,6 @@ class Parser implements ParserInterface
     public const ARGUMENT_URL = 10;
 
     /**
-     * Позиция UserAgent, которая соотвествует ключу массива
-     */
-    public const ARGUMENT_USER_AGENT = 16;
-
-    /**
      * Стартовое значение, если в массиве не найден нужный ключ
      */
     private const START_VALUE = 1;
@@ -128,7 +123,7 @@ class Parser implements ParserInterface
             }
             $line = $fileObject->fgets();
 
-            $logArguments = explode(' ', $line);
+            $logArguments = \explode(' ', $line);
 
             if (!$this->validator->validate($logArguments)) {
                 $failAttempt++;
@@ -146,11 +141,9 @@ class Parser implements ParserInterface
             $statusCodes[$rawCode] = isset($statusCodes[$rawCode]) ? ++$statusCodes[$rawCode] : self::START_VALUE;
 
             foreach (self::ALL_CRAWLERS as $key => $crawler) {
-                $maybeBot = $logArguments[self::ARGUMENT_USER_AGENT];
-
-                if (\strpos($maybeBot, $crawler) !== false) {
-                    if (isset($crawlers[$maybeBot])) {
-                        $crawlers[$maybeBot]++;
+                if (\strpos($line, $crawler) !== false) {
+                    if (isset($crawlers[$key])) {
+                        $crawlers[$key]++;
 
                         continue;
                     }
