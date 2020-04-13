@@ -8,10 +8,11 @@ interface LoaderInterface
 {
     /**
      * @param string $path
+     * @param string $mode
      *
      * @return mixed
      *
      * @throws FIleNotFoundException
      */
-    public function load(string $path);
+    public function load(string $path, string $mode = 'r');
 }

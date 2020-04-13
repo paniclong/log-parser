@@ -11,7 +11,6 @@ class ArgumentValidator
         Parser::ARGUMENT_STATUS_CODE,
         Parser::ARGUMENT_TRAFFIC,
         Parser::ARGUMENT_URL,
-        Parser::ARGUMENT_USER_AGENT,
     ];
 
     /**

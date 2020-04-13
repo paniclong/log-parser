@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Loader\LoaderInterface;
-use App\Service\Parser;
+use App\Service\ParserInterface;
 use App\Service\RenderInterface;
 
 class EntryPoint
@@ -19,7 +19,7 @@ class EntryPoint
     private $fileObject;
 
     /**
-     * @var Parser
+     * @var ParserInterface
      */
     private $parser;
 
@@ -30,10 +30,10 @@ class EntryPoint
 
     /**
      * @param LoaderInterface $loader
-     * @param Parser $parser
+     * @param ParserInterface $parser
      * @param RenderInterface $render
      */
-    public function __construct(LoaderInterface $loader, Parser $parser, RenderInterface $render)
+    public function __construct(LoaderInterface $loader, ParserInterface $parser, RenderInterface $render)
     {
         $this->loader = $loader;
         $this->parser = $parser;
