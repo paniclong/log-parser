@@ -2,6 +2,8 @@
 
 namespace App\Service\Generator\Detail;
 
+use Exception;
+
 class StatusGenerator implements DetailGeneratorInterface
 {
     private const ALL_STATUSES = [
@@ -21,10 +23,10 @@ class StatusGenerator implements DetailGeneratorInterface
     /**
      * @return int
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(): int
     {
-        return self::ALL_STATUSES[\random_int(0, \count(self::ALL_STATUSES) - 1)];
+        return self::ALL_STATUSES[random_int(0, count(self::ALL_STATUSES) - 1)];
     }
 }

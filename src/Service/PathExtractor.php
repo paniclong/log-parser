@@ -24,6 +24,6 @@ class PathExtractor
             throw new ArgumentNotFoundException('Invalid Argument');
         }
 
-        return $arguments[self::PATH_ARGUMENT];
+        return (string)$arguments[self::PATH_ARGUMENT];
     }
 }

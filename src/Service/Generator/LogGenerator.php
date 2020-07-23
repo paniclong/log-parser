@@ -92,7 +92,7 @@ class LogGenerator
      */
     public function create(int $attempt = 100): void
     {
-        $file = $this->fileLoader->load(
+        $file = $this->fileLoader->create(
             \sprintf(__DIR__ . '/../../../files/access%s.log', \time()),
             'wb'
         );

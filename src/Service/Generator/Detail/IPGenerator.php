@@ -2,6 +2,8 @@
 
 namespace App\Service\Generator\Detail;
 
+use Exception;
+
 class IPGenerator implements DetailGeneratorInterface
 {
     private const AVAILABLE_IPS = [
@@ -16,7 +18,7 @@ class IPGenerator implements DetailGeneratorInterface
     /**
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(): string
     {

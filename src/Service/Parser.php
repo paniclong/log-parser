@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Exception\FailParserException;
+use SplFileObject;
 
 class Parser implements ParserInterface
 {
@@ -96,13 +97,13 @@ class Parser implements ParserInterface
      *          }
      *  }
      *
-     * @param \SplFileObject $fileObject
+     * @param SplFileObject $fileObject
      *
      * @return array
      *
      * @throws FailParserException
      */
-    public function handle(\SplFileObject $fileObject): array
+    public function handle(SplFileObject $fileObject): array
     {
         $failAttempt = 0;
 
@@ -115,7 +116,7 @@ class Parser implements ParserInterface
         while (!$fileObject->eof()) {
             if ($failAttempt >= self::COUNT_FAIL_ATTEMPT) {
                 throw new FailParserException(
-                    \sprintf(
+                    sprintf(
                         'Not successful parser work, with fail attempt more %d times',
                         self::COUNT_FAIL_ATTEMPT
                     )
@@ -123,7 +124,7 @@ class Parser implements ParserInterface
             }
             $line = $fileObject->fgets();
 
-            $logArguments = \explode(' ', $line);
+            $logArguments = explode(' ', $line);
 
             if (!$this->validator->validate($logArguments)) {
                 $failAttempt++;
@@ -131,7 +132,7 @@ class Parser implements ParserInterface
                 continue;
             }
 
-            $rawUrl = \trim($logArguments[self::ARGUMENT_URL], '"');
+            $rawUrl = trim($logArguments[self::ARGUMENT_URL], '"');
             $rawCode = $logArguments[self::ARGUMENT_STATUS_CODE];
 
             $maybeUniqueUrls[$rawUrl] = isset($maybeUniqueUrls[$rawUrl])
@@ -167,6 +168,6 @@ class Parser implements ParserInterface
             $urls++;
         }
 
-        return \compact('views', 'traffic', 'urls', 'crawlers', 'statusCodes');
+        return compact('views', 'traffic', 'urls', 'crawlers', 'statusCodes');
     }
 }

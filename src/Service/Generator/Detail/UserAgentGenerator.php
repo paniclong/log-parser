@@ -2,6 +2,8 @@
 
 namespace App\Service\Generator\Detail;
 
+use Exception;
+
 class UserAgentGenerator implements DetailGeneratorInterface
 {
     private const ALL_USER_AGENT = [
@@ -17,10 +19,10 @@ class UserAgentGenerator implements DetailGeneratorInterface
     /**
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(): string
     {
-        return \sprintf('"%s"', self::ALL_USER_AGENT[\random_int(0, \count(self::ALL_USER_AGENT) - 1)]);
+        return sprintf('"%s"', self::ALL_USER_AGENT[random_int(0, count(self::ALL_USER_AGENT) - 1)]);
     }
 }

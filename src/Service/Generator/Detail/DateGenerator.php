@@ -9,6 +9,6 @@ class DateGenerator implements DetailGeneratorInterface
      */
     public function handle(): string
     {
-        return \sprintf('%s%s%s', '[', \date('d/m/Y:h:i:s O'), ']');
+        return sprintf('%s%s%s', '[', date('d/m/Y:h:i:s O'), ']');
     }
 }

@@ -12,14 +12,14 @@ php parser.php log_name
 Для того, чтобы воспользоваться парсером необязательно брать access.log файл nginx
 Достаточно ввести команду (из корня)
 ```
-php parser.php app:generate-log create count
+php parser.php log-create count
 ```
 Где 
 - count - количество записей в файле, по умолчанию 100 (необязательный параметр)
 
 Если данных оказалось мало, нужно воспользоваться командой (из корня)
 ```
-php parser.php app:generate-log update log_name count
+php parser.php log-update count log_name
 ```
 Где 
 - log_name путь к файлу, все файлы которые создаются командой create, создаются в папке files/ (обязательный параметр)
@@ -27,7 +27,7 @@ php parser.php app:generate-log update log_name count
 
 Если записей слишком много, можно обрезать файл
 ```
-php parser.php app:generate-log rollback log_name count
+php parser.php log-rollback count log_name
 ```
 Где 
 - log_name путь к файлу (обязательный параметр)

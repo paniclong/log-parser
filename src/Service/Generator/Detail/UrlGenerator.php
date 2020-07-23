@@ -2,6 +2,8 @@
 
 namespace App\Service\Generator\Detail;
 
+use Exception;
+
 class UrlGenerator implements DetailGeneratorInterface
 {
     private const ALL_DOMAIN = [
@@ -16,10 +18,10 @@ class UrlGenerator implements DetailGeneratorInterface
     /**
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(): string
     {
-        return \sprintf('"%s"', self::ALL_DOMAIN[\random_int(0, \count(self::ALL_DOMAIN) - 1)]);
+        return sprintf('"%s"', self::ALL_DOMAIN[random_int(0, count(self::ALL_DOMAIN) - 1)]);
     }
 }
