@@ -2,6 +2,8 @@
 
 namespace App\Service\Generator\Detail;
 
+use Exception;
+
 class RequestGenerator implements DetailGeneratorInterface
 {
     private const HTTP_METHODS = [
@@ -33,39 +35,39 @@ class RequestGenerator implements DetailGeneratorInterface
     private const HTTP_VERSION = ' HTTP/1.1';
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(): string
     {
         $method = $this->getHttpMethod();
         $requestPath = $this->getRequestPatch();
 
-        return \sprintf('"%s %s"', $method, $requestPath);
+        return sprintf('"%s %s"', $method, $requestPath);
     }
 
     /**
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function getHttpMethod(): string
     {
-        return self::HTTP_METHODS[\random_int(0, \count(self::HTTP_METHODS) - 1)];
+        return self::HTTP_METHODS[random_int(0, count(self::HTTP_METHODS) - 1)];
     }
 
     /**
      * @return string
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function getRequestPatch(): string
     {
         $path = '';
 
-        for ($i = \random_int(0, 3); $i > 0; $i--) {
-            $path .= self::ALL_DIRECTORIES[\random_int(0, \count(self::ALL_DIRECTORIES) - 1)];
+        for ($i = random_int(0, 3); $i > 0; $i--) {
+            $path .= self::ALL_DIRECTORIES[random_int(0, count(self::ALL_DIRECTORIES) - 1)];
         }
 
-        return $path . self::ALL_PHP_FILES[\random_int(0, \count(self::ALL_PHP_FILES) - 1)] . self::HTTP_VERSION;
+        return $path . self::ALL_PHP_FILES[random_int(0, count(self::ALL_PHP_FILES) - 1)] . self::HTTP_VERSION;
     }
 }

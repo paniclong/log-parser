@@ -2,7 +2,9 @@
 
 namespace App\Exception;
 
-abstract class AbstractBaseException extends \Exception
+use Exception;
+
+abstract class AbstractBaseException extends Exception
 {
 
 }

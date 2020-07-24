@@ -9,6 +9,6 @@ class JsonRender implements RenderInterface
      */
     public function view(array $data): void
     {
-        echo \json_encode($data);
+        echo json_encode($data) . PHP_EOL;
     }
 }

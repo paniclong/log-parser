@@ -3,15 +3,16 @@
 namespace App\Service;
 
 use App\Exception\FailParserException;
+use SplFileObject;
 
 interface ParserInterface
 {
     /**
-     * @param \SplFileObject $fileObject
+     * @param SplFileObject $fileObject
      *
      * @return array
      *
      * @throws FailParserException
      */
-    public function handle(\SplFileObject $fileObject): array;
+    public function handle(SplFileObject $fileObject): array;
 }

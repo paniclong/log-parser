@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Exception\FailParserException;
+use App\Exception\FIleNotFoundException;
 use App\Loader\LoaderInterface;
 use App\Service\ParserInterface;
 use App\Service\RenderInterface;
@@ -43,15 +45,19 @@ class EntryPoint
     /**
      * @param string $path
      *
-     * @throws Exception\FIleNotFoundException
+     * @return EntryPoint
+     *
+     * @throws FIleNotFoundException
      */
-    public function read(string $path): void
+    public function read(string $path): self
     {
         $this->fileObject = $this->loader->load($path);
+
+        return $this;
     }
 
     /**
-     * @throws Exception\FailParserException
+     * @throws FailParserException
      */
     public function parse(): void
     {

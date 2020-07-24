@@ -1,53 +1,59 @@
 <?php
+// @todo Расписать как работает процесс парсинга
+// @todo Расписать как работает процесс rollback'а записей
+
+use App\Exception\ArgumentNotFoundException;
+use App\Exception\RuntimeException;
+use App\Factory\EntryPointFactory;
+use App\Factory\LogGeneratorFactory;
+use App\Factory\LoggerFactory;
+use App\Loader\FileLoader;
 
 require_once 'vendor/autoload.php';
 
-$fileLoader = new \App\Loader\FileLoader();
+try {
+    $extractor = new App\Service\ArgumentsExtractor($argv);
+    $fileLoader = new FileLoader();
 
-if ($argv[1] === 'app:generate-log') {
-    $generator = new \App\Service\Generator\LogGenerator(
-        $fileLoader,
-        new \App\Service\Generator\Detail\IPGenerator,
-        new \App\Service\Generator\Detail\DateGenerator,
-        new \App\Service\Generator\Detail\RequestGenerator,
-        new \App\Service\Generator\Detail\StatusGenerator,
-        new \App\Service\Generator\Detail\TrafficGenerator,
-        new \App\Service\Generator\Detail\UrlGenerator,
-        new \App\Service\Generator\Detail\UserAgentGenerator
-    );
+    $command = $extractor->getCommand();
 
-    try {
-        if (isset($argv[2])) {
-            switch ($argv[2]) {
-                case 'create': $generator->create($argv[3] ?? 100);break;
-                case 'update': $generator->update($argv[3] ?? '', $argv[4] ?? 100);break;
-                case 'rollback': $generator->rollback($argv[3] ?? '', $argv[4] ?? 1);break;
-                default:
-                    throw new \App\Exception\RuntimeException('Method not set');
-            }
+    if (in_array($command, ['log-create', 'log-update', 'log-rollback'], true)) {
+        $generator = LogGeneratorFactory::createWithFileLoader($fileLoader);
+
+        $countRecords = 100;
+        try {
+            $countRecords = $extractor->getCount();
+        } catch (ArgumentNotFoundException $ex) {
         }
-    } catch (Exception $ex) {
-        echo $ex->getMessage();
+
+        switch ($command) {
+            case 'log-create':
+                $generator->create($countRecords);
+                break;
+            case 'log-update':
+                $pathToDummyFile = $extractor->getPathForDummyFile();
+
+                $generator->update($pathToDummyFile, $countRecords);
+                break;
+            case 'log-rollback':
+                $pathToDummyFile = $extractor->getPathForDummyFile();
+
+                $generator->rollback($pathToDummyFile, $countRecords);
+                break;
+            default:
+                throw new RuntimeException(sprintf('Unknown command - %s', $command));
+        }
+
+        return;
     }
 
-    return;
-}
+    EntryPointFactory::createWithFileLoader($fileLoader)
+        ->read($extractor->getPath())
+        ->parse();
+} catch (Throwable $ex) {
+    $logger = (new LoggerFactory())->create('main.log');
 
-$entryPoint = new \App\EntryPoint(
-    $fileLoader,
-    new \App\Service\Parser(
-        new \App\Service\ArgumentValidator()
-    ),
-    new \App\Service\JsonRender()
-);
+    $logger->critical($ex->getMessage(), ['traceAsString' => $ex->getTraceAsString()]);
 
-try {
-    $entryPoint->read((new \App\Service\PathExtractor())->get($argv));
-    $entryPoint->parse();
-} catch (\App\Exception\ArgumentNotFoundException $ex) {
-    echo $ex->getMessage();
-} catch (\App\Exception\FIleNotFoundException $ex) {
-    echo $ex->getMessage();
-} catch (\App\Exception\FailParserException $ex) {
-    echo $ex->getMessage();
+    echo 'Что-то пошло не так, смотри логи' . PHP_EOL;
 }
