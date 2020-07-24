@@ -1,71 +1,59 @@
 <?php
+// @todo Расписать как работает процесс парсинга
+// @todo Расписать как работает процесс rollback'а записей
 
 use App\Exception\ArgumentNotFoundException;
-use App\Exception\FailParserException;
-use App\Exception\FIleNotFoundException;
 use App\Exception\RuntimeException;
 use App\Factory\EntryPointFactory;
 use App\Factory\LogGeneratorFactory;
+use App\Factory\LoggerFactory;
 use App\Loader\FileLoader;
-use App\Service\PathExtractor;
 
 require_once 'vendor/autoload.php';
 
-if (count($argv) === 1) {
-    echo 'Not enough arguments' . PHP_EOL;
+try {
+    $extractor = new App\Service\ArgumentsExtractor($argv);
+    $fileLoader = new FileLoader();
 
-    return;
-}
+    $command = $extractor->getCommand();
 
-$fileLoader = new FileLoader();
-
-if (
-    isset($argv[1])
-    && in_array($argv[1], ['log-create', 'log-update', 'log-rollback'], true)
-) {
-    try {
+    if (in_array($command, ['log-create', 'log-update', 'log-rollback'], true)) {
         $generator = LogGeneratorFactory::createWithFileLoader($fileLoader);
 
-        if (isset($argv[2]) && is_numeric($argv[2])) {
-            $countRecords = (int)$argv[2];
+        $countRecords = 100;
+        try {
+            $countRecords = $extractor->getCount();
+        } catch (ArgumentNotFoundException $ex) {
         }
 
-        switch ($argv[1]) {
+        switch ($command) {
             case 'log-create':
-                $generator->create($argv[2] ?? 100);
+                $generator->create($countRecords);
                 break;
             case 'log-update':
-                $path = $argv[3] ?? '';
-                $count = $argv[2] ?? 100;
+                $pathToDummyFile = $extractor->getPathForDummyFile();
 
-                $generator->update($path, $count);
+                $generator->update($pathToDummyFile, $countRecords);
                 break;
             case 'log-rollback':
-                $path = $argv[3] ?? '';
-                $count = $argv[2] ?? 1;
+                $pathToDummyFile = $extractor->getPathForDummyFile();
 
-                $generator->rollback($path, $count);
+                $generator->rollback($pathToDummyFile, $countRecords);
                 break;
             default:
-                throw new RuntimeException('Unknown action');
+                throw new RuntimeException(sprintf('Unknown command - %s', $command));
         }
-    } catch (Exception $ex) {
-        echo $ex->getMessage() . PHP_EOL;
+
+        return;
     }
 
-    return;
-}
-
-try {
-    $entryPoint = EntryPointFactory::createWithFileLoader($fileLoader);
-
-    $entryPoint
-        ->read((new PathExtractor())->get($argv))
+    EntryPointFactory::createWithFileLoader($fileLoader)
+        ->read($extractor->getPath())
         ->parse();
-} catch (ArgumentNotFoundException $ex) {
-    echo $ex->getMessage(). PHP_EOL;
-} catch (FIleNotFoundException $ex) {
-    echo $ex->getMessage(). PHP_EOL;
-} catch (FailParserException $ex) {
-    echo $ex->getMessage(). PHP_EOL;
+} catch (Throwable $ex) {
+    $logger = (new LoggerFactory())->create('main.log');
+
+    $logger->critical($ex->getMessage(), ['traceAsString' => $ex->getTraceAsString()]);
+
+    echo 'Что-то пошло не так, смотри логи' . PHP_EOL;
 }

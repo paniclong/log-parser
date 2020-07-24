@@ -90,7 +90,7 @@ class LogGenerator
      *
      * @throws \Exception
      */
-    public function create(int $attempt = 100): void
+    public function create(int $attempt): void
     {
         $file = $this->fileLoader->create(
             \sprintf(__DIR__ . '/../../../files/access%s.log', \time()),
@@ -112,7 +112,7 @@ class LogGenerator
      *
      * @throws \Exception
      */
-    public function update(string $path, int $attempt = 100): void
+    public function update(string $path, int $attempt): void
     {
         $file = $this->fileLoader->load($path, 'ab');
 
@@ -126,12 +126,14 @@ class LogGenerator
     /**
      * Откатываем на N-е количество записей
      *
+     * @deprecated Пока работает нестабильно @todo исправить это
+     *
      * @param string $path      Путь к файлу
      * @param int    $countRow  На сколько необходимо откатить
      *
      * @throws \App\Exception\FIleNotFoundException
      */
-    public function rollback(string $path, int $countRow = 1): void
+    public function rollback(string $path, int $countRow): void
     {
         $file = $this->fileLoader->load($path, 'rwb+');
 
